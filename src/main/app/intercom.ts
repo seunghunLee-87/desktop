@@ -188,8 +188,8 @@ export function handleRemoveServerModal(e: IpcMainEvent, name: string) {
     }
 }
 
-export function handleMentionNotification(event: IpcMainEvent, title: string, body: string, channel: {id: string}, teamId: string, url: string, silent: boolean, data: MentionData) {
-    displayMention(title, body, channel, teamId, url, silent, event.sender, data);
+export function handleMentionNotification(event: IpcMainEvent, title: string, body: string, channel: {id: string}, teamId: string, url: string, silent: boolean, postUserId: string, data: MentionData) {
+    displayMention(title, body, channel, teamId, url, silent, postUserId, event.sender, data);
 }
 
 export function handleOpenAppMenu() {

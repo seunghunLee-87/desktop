@@ -3,7 +3,16 @@
 
 /* eslint-disable max-lines */
 import path from 'path';
-import {app, BrowserWindow, nativeImage, systemPreferences, ipcMain, IpcMainEvent, IpcMainInvokeEvent} from 'electron';
+import {
+    app,
+    BrowserWindow,
+    nativeImage,
+    systemPreferences,
+    ipcMain,
+    IpcMainEvent,
+    IpcMainInvokeEvent,
+    screen,
+} from 'electron';
 import log from 'electron-log';
 
 import {
@@ -47,6 +56,7 @@ export class WindowManager {
     viewManager?: ViewManager;
     teamDropdown?: TeamDropdownView;
     currentServerName?: string;
+    notiWindow?: BrowserWindow;
 
     constructor() {
         this.assetsDir = path.resolve(app.getAppPath(), 'assets');
@@ -602,6 +612,53 @@ export class WindowManager {
 
     handleGetWebContentsId = (event: IpcMainInvokeEvent) => {
         return event.sender.id;
+    }
+
+    // 2022-02-21. xofl - new noti modal
+    makeNotiWindow = () => {
+        if (this.notiWindow) {
+            this.notiWindow.show();
+        } else {
+            this.restoreMain();
+
+            const primaryDisplay = screen.getPrimaryDisplay();
+            const width = primaryDisplay?.workAreaSize?.width || 800;
+            const height = primaryDisplay?.workAreaSize?.height || 600;
+
+            this.notiWindow = new BrowserWindow({
+                width,
+                height,
+                title: '호출 메시지',
+                show: false,
+                backgroundColor: '#ffffff',
+                parent: this.mainWindow,
+                modal: true,
+                autoHideMenuBar: true,
+                frame: false,
+                center: true,
+                alwaysOnTop: true,
+                resizable: false,
+                minimizable: false,
+                movable: false,
+                webPreferences: {
+                    nativeWindowOpen: true,
+                    preload: path.resolve(__dirname, '../notifications/preload.js'),
+                },
+            });
+
+            const filePath = path.resolve(__dirname, '../notifications/alert.html');
+            this.notiWindow.loadFile(filePath).then(() => log.info('file load complete'));
+
+            this.notiWindow.once('ready-to-show', () => {
+                this.notiWindow?.show();
+            });
+
+            this.notiWindow.on('closed', () => delete this.notiWindow);
+
+            // this.notiWindow.webContents.openDevTools();
+        }
+
+        return this.notiWindow;
     }
 }
 

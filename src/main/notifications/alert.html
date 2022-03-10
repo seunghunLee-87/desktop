@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8"/>
+    <title></title>
+    <style>
+        button {
+            font-weight: 600;
+            color: rgb(255, 255, 255);
+            padding: 1em 2em;
+            outline: none;
+            border-width: initial;
+            border-style: none;
+            border-color: initial;
+            border-image: initial;
+            background: rgb(51, 153, 204);
+            cursor: pointer;
+        }
+        .alertMain {
+            position:absolute;
+            top:0;right:0;bottom:0;left:0;
+            display:flex;
+            flex-direction: column;
+            align-items:center;
+            justify-content:center;
+        }
+        h2 {
+            font-weight: 400;
+            font-size: 2em;
+            padding: 0px 0px 1em;
+            margin: 60px 0 0 0;
+            color: rgb(51, 153, 204);
+        }
+        h4 {
+            font-weight: 500;
+            font-size: 1.5em;
+            padding: 0px 0px 4em;
+            margin: 0;
+            color: #a5b1c2;
+        }
+        /*.blink {
+          -webkit-animation: blink 1.0s linear infinite;
+        }
+        @keyframes blink {
+          0% { color:rgb(201, 78, 80);}
+          100% {color:#ffffff; }
+        }*/
+        .blink{
+            /*-webkit-animation:blink 0.5s ease-in-out infinite alternate;
+            -moz-animation:blink 0.5s ease-in-out infinite alternate;
+            animation:blink 0.5s ease-in-out infinite alternate;*/
+        }
+        @-webkit-keyframes blink{
+            0% {opacity:0;}
+            100% {opacity:1;}
+        }
+        @-moz-keyframes blink{
+            0% {opacity:0;}
+            100% {opacity:1;}
+        }
+        @keyframes blink{
+            0% {opacity:0;}
+            100% {opacity:1;}
+        }
+    </style>
+</head>
+<body>
+    <div class="alertMain">
+        <img id='alertMemberAvatar' style='border-radius: 50%' />
+        <h2 class="blink">
+            <strong style="font-size: 1.3em"></strong>님 호출
+        </h2>
+        <h4></h4>
+        <div style="text-align: center">
+            <button id="close">확인</button>
+        </div>
+    </div>
+</body>
+<script>
+    window.api.receive('notiData', (data) => {
+        const bodyData = data.content.split(':');
+        const callName = bodyData[0].split(' ')[1];
+        const callContents = bodyData[1].trim().substring(4);
+        // console.log('callName', callName)
+        // console.log('callContents', callContents)
+
+        document.querySelector('strong').innerHTML = callName;
+        document.querySelector('h4').innerHTML = callContents;
+        document.getElementById('alertMemberAvatar').src = `http://localhost:8065/api/v4/users/${data.postUserId}/image`
+    });
+
+    document.getElementById('close').addEventListener('click', () => window.api.send('closeAlert', true));
+</script>
+</html>

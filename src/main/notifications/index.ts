@@ -1,7 +1,7 @@
 // Copyright (c) 2016-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {shell, Notification} from 'electron';
+import {shell, Notification, ipcMain} from 'electron';
 import log from 'electron-log';
 
 import {MentionData} from 'types/notification';
@@ -16,7 +16,7 @@ import {DownloadNotification} from './Download';
 
 export const currentNotifications = new Map();
 
-export function displayMention(title: string, body: string, channel: {id: string}, teamId: string, url: string, silent: boolean, webcontents: Electron.WebContents, data: MentionData) {
+export function displayMention(title: string, body: string, channel: {id: string}, teamId: string, url: string, silent: boolean, postUserId: string, webcontents: Electron.WebContents, data: MentionData) {
     if (!Notification.isSupported()) {
         log.error('notification not supported');
         return;
@@ -48,6 +48,26 @@ export function displayMention(title: string, body: string, channel: {id: string
             WindowManager.sendToRenderer(PLAY_SOUND, notificationSound);
         }
         WindowManager.flashFrame(true);
+
+        // 2022-02-21. xofl - add noti function
+        const mainWindow = WindowManager.getMainWindow();
+        if (mainWindow) {
+            log.info('postUserId', postUserId);
+
+            const notiData = {content: mention.body, postUserId};
+            const windowContent = mention.body;
+            const notiCheck = handleValidateNotiType(windowContent);
+            if (notiCheck) {
+                const notiWindow = WindowManager.makeNotiWindow();
+
+                notiWindow.once('show', () => {
+                    notiWindow.webContents.send('notiData', notiData);
+                    webcontents.send('notification-clicked', {channel, teamId, url});
+                });
+
+                ipcMain.on('closeAlert', () => WindowManager.close());
+            }
+        }
     });
 
     mention.on('click', () => {
@@ -76,3 +96,10 @@ export function displayDownloadCompleted(fileName: string, path: string, serverN
     });
     download.show();
 }
+
+const handleValidateNotiType = (windowContent: string) => {
+    const title = windowContent.split(':');
+    const callType = title[1].trim().substring(0, 3);
+
+    return callType === '!호출';
+};
