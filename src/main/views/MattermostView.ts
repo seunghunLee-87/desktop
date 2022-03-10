@@ -263,7 +263,11 @@ export class MattermostView extends EventEmitter {
     }
 
     isReady = () => {
-        return this.status !== Status.LOADING;
+        return this.status === Status.READY;
+    }
+
+    isErrored = () => {
+        return this.status === Status.ERROR;
     }
 
     needsLoadingScreen = () => {
@@ -374,7 +378,7 @@ export class MattermostView extends EventEmitter {
     findUnreadState = (favicon: string | null) => {
         try {
             this.view.webContents.send(IS_UNREAD, favicon, this.tab.name);
-        } catch (err) {
+        } catch (err: any) {
             log.error(`There was an error trying to request the unread state: ${err}`);
             log.error(err.stack);
         }
