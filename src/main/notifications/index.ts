@@ -125,7 +125,12 @@ export function displayRestartToUpgrade(version: string, handleUpgrade: () => vo
 // 2022-02-21. xofl - add noti function (check noti)
 const handleValidateNotiType = (windowContent: string) => {
     const title = windowContent.split(':');
-    const callType = title[1].trim().substring(0, 3);
+    let result = false;
 
-    return callType === '!호출';
+    if (title.length > 1) {
+        const callType = title[1].trim().substring(0, 3);
+        result = callType === '!호출';
+    }
+
+    return result;
 };

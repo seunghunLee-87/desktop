@@ -71,9 +71,9 @@
         document.querySelector('h4').innerHTML = callContents;
 
         const notiUserId = data.postUserId ? data.postUserId : 'oydnes8wktr7idgxwh9k46nouh';
-        const avatarUrl = `http://localhost:8065/api/v4/users/${notiUserId}/image` // local
+        // const avatarUrl = `http://localhost:8065/api/v4/users/${notiUserId}/image` // local
         // const avatarUrl = `https://msgdev.ilscp.net/api/v4/users/${notiUserId}/image` // dev
-        // const avatarUrl = `https://msg.ilscp.net/api/v4/users/${notiUserId}/image` // live
+        const avatarUrl = `https://msg.ilscp.net/api/v4/users/${notiUserId}/image` // live
 
         document.getElementById('alertMemberAvatar').src = avatarUrl
     });
