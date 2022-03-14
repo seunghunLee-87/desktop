@@ -136,7 +136,7 @@ window.addEventListener('message', ({origin, data = {}} = {}) => {
     case 'dispatch-notification': {
         if (shouldSendNotifications) {
             const {title, body, channel, teamId, url, silent, postUserId, data: messageData} = message;
-            ipcRenderer.send(NOTIFY_MENTION, title, body, channel, teamId, url, silent, postUserId, messageData);
+            ipcRenderer.send(NOTIFY_MENTION, title, body, channel, teamId, url, silent, messageData, postUserId);
         }
         break;
     }

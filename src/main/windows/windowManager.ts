@@ -37,7 +37,7 @@ import {SECOND} from 'common/utils/constants';
 import Config from 'common/config';
 import {getTabViewName, TAB_MESSAGING} from 'common/tabs/TabView';
 
-import {getAdjustedWindowBoundaries} from '../utils';
+import {getAdjustedWindowBoundaries, getLocalPreload, getLocalURLString} from '../utils';
 
 import {ViewManager} from '../views/viewManager';
 import CriticalErrorHandler from '../CriticalErrorHandler';
@@ -652,6 +652,7 @@ export class WindowManager {
             const width = primaryDisplay?.workAreaSize?.width || 800;
             const height = primaryDisplay?.workAreaSize?.height || 600;
 
+            const preload = getLocalPreload('notiModalPreload.js');
             this.notiWindow = new BrowserWindow({
                 width,
                 height,
@@ -669,12 +670,16 @@ export class WindowManager {
                 movable: false,
                 webPreferences: {
                     nativeWindowOpen: true,
-                    preload: path.resolve(__dirname, '../notifications/preload.js'),
+                    preload,
                 },
             });
 
-            const filePath = path.resolve(__dirname, '../notifications/alert.html');
-            this.notiWindow.loadFile(filePath).then(() => log.info('file load complete'));
+            const localURL = getLocalURLString('notiAlert.html');
+            this.notiWindow.loadURL(localURL).catch(
+                (reason) => {
+                    log.error(`notiWindow failed to load: ${reason}`);
+                    log.info(process.env);
+                });
 
             this.notiWindow.once('ready-to-show', () => {
                 this.notiWindow?.show();

@@ -17,7 +17,7 @@ import {NewVersionNotification, UpgradeNotification} from './Upgrade';
 
 export const currentNotifications = new Map();
 
-export function displayMention(title: string, body: string, channel: {id: string}, teamId: string, url: string, silent: boolean, postUserId: string, webcontents: Electron.WebContents, data: MentionData) {
+export function displayMention(title: string, body: string, channel: {id: string}, teamId: string, url: string, silent: boolean, webcontents: Electron.WebContents, data: MentionData, postUserId: string) {
     if (!Notification.isSupported()) {
         log.error('notification not supported');
         return;

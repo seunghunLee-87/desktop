@@ -28,6 +28,7 @@ module.exports = merge(base, {
         permissionModal: './src/renderer/modals/permission/permission.tsx',
         certificateModal: './src/renderer/modals/certificate/certificate.tsx',
         loadingScreen: './src/renderer/modals/loadingScreen/index.tsx',
+        notiAlert: './src/renderer/modals/notiAlert/notiAlert.tsx',
     },
     output: {
         path: path.resolve(__dirname, 'dist/renderer'),
@@ -99,6 +100,12 @@ module.exports = merge(base, {
             template: 'src/renderer/index.html',
             chunks: ['loadingScreen'],
             filename: 'loadingScreen.html',
+        }),
+        new HtmlWebpackPlugin({
+            title: 'notiAlert',
+            template: 'src/renderer/modals/notiAlert/index.html',
+            chunks: ['notiAlert'],
+            filename: 'notiAlert.html',
         }),
         new MiniCssExtractPlugin({
             filename: 'styles.[contenthash].css',
